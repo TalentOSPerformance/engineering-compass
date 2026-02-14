@@ -15,11 +15,11 @@ interface MetricCardProps {
   delay?: number;
 }
 
-const levelConfig: Record<PerfLevel, { label: string; className: string }> = {
-  elite: { label: "Elite", className: "bg-perf-elite/15 text-perf-elite" },
-  high: { label: "High", className: "bg-perf-high/15 text-perf-high" },
-  medium: { label: "Medium", className: "bg-perf-medium/15 text-perf-medium" },
-  low: { label: "Low", className: "bg-perf-low/15 text-perf-low" },
+const levelConfig: Record<PerfLevel, { label: string; dotClass: string; bgClass: string }> = {
+  elite: { label: "Elite", dotClass: "bg-perf-elite", bgClass: "bg-perf-elite/8" },
+  high: { label: "High", dotClass: "bg-perf-high", bgClass: "bg-perf-high/8" },
+  medium: { label: "Medium", dotClass: "bg-perf-medium", bgClass: "bg-perf-medium/8" },
+  low: { label: "Low", dotClass: "bg-perf-low", bgClass: "bg-perf-low/8" },
 };
 
 const trendConfig: Record<TrendDirection, { icon: typeof TrendingUp; className: string }> = {
@@ -34,26 +34,32 @@ export function MetricCard({ title, value, unit, level, trend, trendValue, delay
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: delay * 0.06, ease: "easeOut" }}
-      className="rounded-lg border border-border bg-card p-4 flex flex-col gap-3"
+      transition={{ duration: 0.4, delay: delay * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="group relative rounded-xl bg-card p-5 card-hover overflow-hidden border border-border/60"
     >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">{title}</span>
+      {/* Subtle top accent line */}
+      {levelInfo && (
+        <div className={cn("absolute top-0 left-4 right-4 h-[2px] rounded-b-full opacity-60", levelInfo.dotClass)} />
+      )}
+      
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase">{title}</span>
         {levelInfo && (
-          <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded", levelInfo.className)}>
-            {levelInfo.label}
+          <span className={cn("flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full", levelInfo.bgClass)}>
+            <span className={cn("h-1.5 w-1.5 rounded-full", levelInfo.dotClass)} />
+            <span className="text-card-foreground">{levelInfo.label}</span>
           </span>
         )}
       </div>
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-2xl font-semibold font-mono tracking-tight text-card-foreground">{value}</span>
-        {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
+      <div className="flex items-baseline gap-2">
+        <span className="text-3xl font-bold font-mono tracking-tighter text-card-foreground">{value}</span>
+        {unit && <span className="text-xs text-muted-foreground font-medium">{unit}</span>}
       </div>
       {trendInfo && (
-        <div className={cn("flex items-center gap-1 text-xs", trendInfo.className)}>
-          <trendInfo.icon className="h-3 w-3" />
+        <div className={cn("flex items-center gap-1.5 text-xs mt-3 font-medium", trendInfo.className)}>
+          <trendInfo.icon className="h-3.5 w-3.5" />
           {trendValue && <span>{trendValue}</span>}
         </div>
       )}

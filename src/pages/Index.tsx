@@ -9,11 +9,12 @@ import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { CycleTimeFlow } from "@/components/dashboard/CycleTimeFlow";
 import { SparklineCard } from "@/components/dashboard/SparklineCard";
 import { WorkBreakdownCard } from "@/components/dashboard/WorkBreakdownCard";
+import { motion } from "framer-motion";
+import { Activity } from "lucide-react";
 
 const sparklineData = {
   prSize: [{ v: 800 }, { v: 950 }, { v: 1100 }, { v: 1050 }, { v: 1200 }, { v: 1150 }, { v: 1100 }, { v: 1050 }],
   prsOpened: [{ v: 0.3 }, { v: 0.4 }, { v: 0.5 }, { v: 0.45 }, { v: 0.5 }, { v: 0.55 }, { v: 0.5 }, { v: 0.5 }],
-  deployFreq: [{ v: 0.1 }, { v: 0.12 }, { v: 0.15 }, { v: 0.14 }, { v: 0.16 }, { v: 0.18 }, { v: 0.17 }, { v: 0.17 }],
 };
 
 const trendData = {
@@ -44,12 +45,22 @@ export default function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState("30d");
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-lg font-semibold text-foreground">Dashboard</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Visão executiva das métricas de engenharia</p>
+    <div className="space-y-8">
+      {/* Header — bolder */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Activity className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">Dashboard</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">Visão executiva das métricas de engenharia</p>
+          </div>
         </div>
         <DashboardFilters
           selectedTeam={selectedTeam}
@@ -57,9 +68,9 @@ export default function Dashboard() {
           selectedPeriod={selectedPeriod}
           onPeriodChange={setSelectedPeriod}
         />
-      </div>
+      </motion.div>
 
-      {/* Hero Row: Cycle Time Flow + Work Breakdown + Sparklines */}
+      {/* Hero Row */}
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
         <CycleTimeFlow />
         <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -94,7 +105,7 @@ export default function Dashboard() {
 
       {/* Trends */}
       <div>
-        <h2 className="text-sm font-semibold text-foreground mb-3">Trends</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-3 tracking-wide">Trends</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <MetricTrend title="Cycle Time" data={trendData.cycleTime} target={20} delay={15} />
           <MetricTrend title="Deploy Frequency" data={trendData.deployFreq} color="bg-perf-elite" delay={16} />
