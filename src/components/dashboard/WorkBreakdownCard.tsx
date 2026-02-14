@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 const workData = [
   { name: "Code Changes", value: 258, color: "hsl(var(--primary))" },
@@ -29,26 +29,24 @@ export function WorkBreakdownCard() {
     >
       <h3 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">Work Breakdown</h3>
       <div className="flex items-center gap-4">
-        <div className="w-24 h-24 relative">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={workData}
-                cx="50%"
-                cy="50%"
-                innerRadius={26}
-                outerRadius={44}
-                dataKey="value"
-                stroke="none"
-                cornerRadius={3}
-              >
-                {workData.map((d, i) => (
-                  <Cell key={i} fill={d.color} />
-                ))}
-              </Pie>
-              <Tooltip content={<WBTooltip />} />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="w-24 h-24 flex-shrink-0">
+          <PieChart width={96} height={96}>
+            <Pie
+              data={workData}
+              cx={48}
+              cy={48}
+              innerRadius={26}
+              outerRadius={44}
+              dataKey="value"
+              stroke="none"
+              cornerRadius={3}
+            >
+              {workData.map((d, i) => (
+                <Cell key={i} fill={d.color} />
+              ))}
+            </Pie>
+            <Tooltip content={<WBTooltip />} />
+          </PieChart>
         </div>
         <div className="space-y-2 flex-1">
           {workData.map((d) => (
