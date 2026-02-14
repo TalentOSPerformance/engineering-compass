@@ -8,15 +8,13 @@ const workData = [
   { name: "Docs", value: 32, color: "hsl(var(--chart-5))" },
 ];
 
-const total = workData.reduce((s, d) => s + d.value, 0);
-
 const WBTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs shadow-md">
-      <p className="font-medium text-popover-foreground">{d.name}</p>
-      <p className="text-muted-foreground">{d.value} items</p>
+    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
+      <p className="font-semibold text-popover-foreground">{d.name}</p>
+      <p className="text-muted-foreground font-mono">{d.value} items</p>
     </div>
   );
 };
@@ -24,24 +22,25 @@ const WBTooltip = ({ active, payload }: any) => {
 export function WorkBreakdownCard() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.15 }}
-      className="rounded-lg border border-border bg-card p-4"
+      transition={{ duration: 0.4, delay: 0.15 }}
+      className="rounded-xl bg-card p-5 card-hover border border-border/60"
     >
-      <h3 className="text-xs font-medium text-muted-foreground mb-2">Work Breakdown</h3>
+      <h3 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wider">Work Breakdown</h3>
       <div className="flex items-center gap-4">
-        <div className="w-24 h-24">
+        <div className="w-24 h-24 relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={workData}
                 cx="50%"
                 cy="50%"
-                innerRadius={28}
-                outerRadius={42}
+                innerRadius={26}
+                outerRadius={44}
                 dataKey="value"
                 stroke="none"
+                cornerRadius={3}
               >
                 {workData.map((d, i) => (
                   <Cell key={i} fill={d.color} />
@@ -51,14 +50,14 @@ export function WorkBreakdownCard() {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="space-y-1.5 flex-1">
+        <div className="space-y-2 flex-1">
           {workData.map((d) => (
             <div key={d.name} className="flex items-center justify-between text-[11px]">
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-muted-foreground">{d.name}</span>
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: d.color }} />
+                <span className="text-muted-foreground font-medium">{d.name}</span>
               </div>
-              <span className="font-mono text-card-foreground">{d.value}</span>
+              <span className="font-mono font-bold text-card-foreground">{d.value}</span>
             </div>
           ))}
         </div>
