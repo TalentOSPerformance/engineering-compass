@@ -64,7 +64,8 @@ export function AppSidebar() {
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
+    // Ensure exact segment match to avoid /me matching /metrics
+    return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
   return (
