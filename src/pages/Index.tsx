@@ -6,14 +6,15 @@ import { RiskCards } from "@/components/dashboard/RiskCards";
 import { MetricTrend } from "@/components/dashboard/MetricTrend";
 import { TeamsTable } from "@/components/dashboard/TeamsTable";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+import { CycleTimeFlow } from "@/components/dashboard/CycleTimeFlow";
+import { SparklineCard } from "@/components/dashboard/SparklineCard";
+import { WorkBreakdownCard } from "@/components/dashboard/WorkBreakdownCard";
 
-const topMetrics = [
-  { title: "Cycle Time P85", value: "18.4", unit: "hours", level: "high" as const, trend: "up" as const, trendValue: "-12%" },
-  { title: "PR Pickup Time", value: "3.2", unit: "hours", level: "medium" as const, trend: "down" as const, trendValue: "+8%" },
-  { title: "Deploy Frequency", value: "4.2", unit: "deploys/day", level: "elite" as const, trend: "up" as const, trendValue: "+15%" },
-  { title: "Silent PR Rate", value: "8.5", unit: "%", level: "high" as const, trend: "up" as const, trendValue: "-3%" },
-  { title: "Change Failure Rate", value: "3.2", unit: "%", level: "elite" as const, trend: "up" as const, trendValue: "-1.2%" },
-];
+const sparklineData = {
+  prSize: [{ v: 800 }, { v: 950 }, { v: 1100 }, { v: 1050 }, { v: 1200 }, { v: 1150 }, { v: 1100 }, { v: 1050 }],
+  prsOpened: [{ v: 0.3 }, { v: 0.4 }, { v: 0.5 }, { v: 0.45 }, { v: 0.5 }, { v: 0.55 }, { v: 0.5 }, { v: 0.5 }],
+  deployFreq: [{ v: 0.1 }, { v: 0.12 }, { v: 0.15 }, { v: 0.14 }, { v: 0.16 }, { v: 0.18 }, { v: 0.17 }, { v: 0.17 }],
+};
 
 const trendData = {
   cycleTime: [
@@ -58,11 +59,28 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Top Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {topMetrics.map((m, i) => (
-          <MetricCard key={m.title} {...m} delay={i} />
-        ))}
+      {/* Hero Row: Cycle Time Flow + Work Breakdown + Sparklines */}
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
+        <CycleTimeFlow />
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <WorkBreakdownCard />
+          <SparklineCard
+            title="PR Size"
+            value="1.1k"
+            unit="P75 changes/PR"
+            data={sparklineData.prSize}
+            color="hsl(var(--perf-medium))"
+            delay={3}
+          />
+          <SparklineCard
+            title="PRs Opened"
+            value="0.5"
+            unit="PRs/day"
+            data={sparklineData.prsOpened}
+            color="hsl(var(--perf-high))"
+            delay={4}
+          />
+        </div>
       </div>
 
       {/* DORA */}
