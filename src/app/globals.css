@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Light theme (default) ────────────────────────────────── */
+:root {
+  --background: 255 255 255;        /* white */
+  --surface: 250 250 250;           /* zinc-50 */
+  --surface-hover: 244 244 245;     /* zinc-100 */
+  --surface-active: 228 228 231;    /* zinc-200 */
+  --foreground: 24 24 27;           /* zinc-900 */
+  --foreground-secondary: 63 63 70; /* zinc-700 */
+  --muted: 113 113 122;             /* zinc-500 */
+  --muted-foreground: 82 82 91;     /* zinc-600 */
+  --border-default: 228 228 231;    /* zinc-200 */
+  --input-bg: 255 255 255;          /* white */
+  --input-border: 212 212 216;      /* zinc-300 */
+  --accent: 59 130 246;             /* blue-500 */
+  --sidebar-bg: 250 250 250;        /* zinc-50 */
+  --sidebar-border: 228 228 231;    /* zinc-200 */
+  --nav-active-bg: 228 228 231;     /* zinc-200 */
+  --nav-hover-bg: 244 244 245;      /* zinc-100 */
+  --placeholder: 161 161 170;       /* zinc-400 */
+
+  /* Performance level colors */
+  --perf-elite: 16 185 129;         /* emerald-500 */
+  --perf-high: 59 130 246;          /* blue-500 */
+  --perf-medium: 245 158 11;        /* amber-500 */
+  --perf-low: 239 68 68;            /* red-500 */
+  --chart-5: 168 85 247;            /* purple-500 */
+
+  /* Custom effects (for utilities) */
+  --glow-primary: 59 130 246;
+  --glass-bg: 255 255 255 / 0.7;
+  --glass-border: 255 255 255 / 0.5;
+
+  /* shadcn/ui compatible tokens (HSL) */
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 10%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 240 6% 10%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 6% 90%;
+  --input-hsl: 240 6% 90%;
+  --ring: 221 83% 53%;
+  --radius: 0.75rem;
+}
+
+/* ─── Dark theme ───────────────────────────────────────────── */
+.dark {
+  --background: 9 9 11;             /* zinc-950 */
+  --surface: 24 24 27;              /* zinc-900 */
+  --surface-hover: 39 39 42;        /* zinc-800 */
+  --surface-active: 63 63 70;       /* zinc-700 */
+  --foreground: 250 250 250;        /* zinc-50 */
+  --foreground-secondary: 212 212 216; /* zinc-300 */
+  --muted: 161 161 170;             /* zinc-400 */
+  --muted-foreground: 113 113 122;  /* zinc-500 */
+  --border-default: 39 39 42;       /* zinc-800 */
+  --input-bg: 39 39 42;             /* zinc-800 */
+  --input-border: 63 63 70;         /* zinc-700 */
+  --accent: 59 130 246;             /* blue-500 */
+  --sidebar-bg: 9 9 11;             /* zinc-950 */
+  --sidebar-border: 39 39 42;       /* zinc-800 */
+  --nav-active-bg: 39 39 42;        /* zinc-800 */
+  --nav-hover-bg: 24 24 27;         /* zinc-900 */
+  --placeholder: 113 113 122;       /* zinc-500 */
+
+  /* Performance level colors (dark) */
+  --perf-elite: 52 211 153;         /* emerald-400 */
+  --perf-high: 96 165 250;          /* blue-400 */
+  --perf-medium: 251 191 36;        /* amber-400 */
+  --perf-low: 248 113 113;          /* red-400 */
+  --chart-5: 192 132 252;           /* purple-400 */
+
+  /* Custom effects (dark) */
+  --glow-primary: 96 165 250;
+  --glass-bg: 24 24 27 / 0.7;
+  --glass-border: 39 39 42 / 0.5;
+
+  /* shadcn/ui (dark) */
+  --card: 228 12% 10%;
+  --card-foreground: 220 14% 96%;
+  --popover: 228 12% 10%;
+  --popover-foreground: 220 14% 96%;
+  --primary: 221 83% 67%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 228 12% 15%;
+  --secondary-foreground: 220 14% 96%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 228 12% 16%;
+  --input-hsl: 228 12% 16%;
+  --ring: 221 83% 67%;
+}
+
+body {
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+/* ─── Recharts theme-aware tick text ──────────────────────── */
+.recharts-cartesian-axis-tick-value {
+  fill: rgb(var(--muted)) !important;
+}
+.recharts-cartesian-grid line {
+  stroke: rgb(var(--border-default)) !important;
+  opacity: 0.5;
+}
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* Native select styling for dark mode */
+select {
+  color-scheme: light dark;
+}
+select option {
+  background: rgb(var(--input-bg));
+  color: rgb(var(--foreground));
+}
+
+/* ─── CSS utilities (Lovable-inspired) ───────────────────────── */
+.glass-card {
+  background: rgb(var(--glass-bg));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(var(--glass-border));
+}
+
+.glow-sm {
+  box-shadow: 0 0 20px -5px rgb(var(--glow-primary) / 0.15);
+}
+
+.glow-md {
+  box-shadow: 0 0 30px -5px rgb(var(--glow-primary) / 0.2);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -8px rgb(var(--foreground) / 0.08);
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgb(var(--accent) / 0.3), transparent 50%, rgb(var(--chart-5) / 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.noise-texture {
+  position: relative;
+}
+
+.noise-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--muted)) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--muted));
+  border-radius: 3px;
+}
+
+/* Custom scrollbar (legacy) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border-default));
+  border-radius: 3px;
+}
