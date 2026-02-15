@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import api from '@/lib/api';
@@ -62,8 +60,8 @@ export default function SurveysPage() {
   if (!orgId) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight">Pesquisas de satisfação</h1>
-        <p className="text-muted-foreground">Selecione uma organização.</p>
+        <h1 className="text-2xl font-bold tracking-tight">Pesquisas de satisfacao</h1>
+        <p className="text-muted-foreground">Selecione uma organizacao.</p>
       </div>
     );
   }
@@ -71,8 +69,8 @@ export default function SurveysPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight">Pesquisas de satisfação</h1>
-        <div className="h-48 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+        <h1 className="text-2xl font-bold tracking-tight">Pesquisas de satisfacao</h1>
+        <div className="h-48 animate-pulse rounded-lg bg-surface-hover" />
       </div>
     );
   }
@@ -80,22 +78,22 @@ export default function SurveysPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Pesquisas de satisfação (SPACE)</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Pesquisas de satisfacao (SPACE)</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Responda à pesquisa ativa e veja resultados agregados.
+          Responda a pesquisa ativa e veja resultados agregados.
         </p>
       </div>
 
       {active && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-border-default bg-surface p-6">
           <h2 className="mb-4 text-lg font-semibold">{active.title}</h2>
           <p className="text-sm text-muted-foreground mb-4">
-            Período: {new Date(active.periodStart).toLocaleDateString('pt-BR')} até {new Date(active.periodEnd).toLocaleDateString('pt-BR')}
+            Periodo: {new Date(active.periodStart).toLocaleDateString('pt-BR')} ate {new Date(active.periodEnd).toLocaleDateString('pt-BR')}
           </p>
           {active.type === 'enps' && (
             <>
               <p className="text-sm text-muted-foreground mb-2">
-                De 0 a 10, qual a probabilidade de você recomendar o ambiente de trabalho para um colega?
+                De 0 a 10, qual a probabilidade de voce recomendar o ambiente de trabalho para um colega?
               </p>
               <div className="flex flex-wrap gap-2">
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
@@ -105,8 +103,8 @@ export default function SurveysPage() {
                     onClick={() => setEnpsScore(n)}
                     className={`h-10 w-10 rounded-lg border text-sm font-medium ${
                       enpsScore === n
-                        ? 'border-blue-500 bg-blue-500 text-white'
-                        : 'border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                        ? 'border-accent bg-accent text-white'
+                        : 'border-border-default hover:bg-surface-hover'
                     }`}
                   >
                     {n}
@@ -117,7 +115,7 @@ export default function SurveysPage() {
                 type="button"
                 onClick={handleSubmitEnps}
                 disabled={enpsScore == null || submitting}
-                className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+                className="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90 disabled:opacity-50"
               >
                 {submitting ? 'Enviando...' : 'Enviar resposta'}
               </button>
@@ -127,12 +125,12 @@ export default function SurveysPage() {
       )}
 
       {aggregates && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-border-default bg-surface p-6">
           <h2 className="mb-4 text-lg font-semibold">Resultados (agregados)</h2>
           <div className="flex gap-6">
             <div>
-              <p className="text-2xl font-bold">{aggregates.enpsAverage ?? '—'}</p>
-              <p className="text-sm text-muted-foreground">eNPS médio</p>
+              <p className="text-2xl font-bold">{aggregates.enpsAverage ?? '\u2014'}</p>
+              <p className="text-sm text-muted-foreground">eNPS medio</p>
             </div>
             <div>
               <p className="text-2xl font-bold">{aggregates.responseCount}</p>
@@ -143,15 +141,15 @@ export default function SurveysPage() {
       )}
 
       {list.length > 0 && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="mb-4 text-lg font-semibold">Histórico de pesquisas</h2>
+        <section className="rounded-xl border border-border-default bg-surface p-6">
+          <h2 className="mb-4 text-lg font-semibold">Historico de pesquisas</h2>
           <ul className="space-y-2">
             {list.map((s) => (
               <li key={s.id} className="flex justify-between text-sm">
                 <span>{s.title}</span>
                 <span className="text-muted-foreground">
                   {new Date(s.periodEnd).toLocaleDateString('pt-BR')}
-                  {s._count?.responses != null ? ` · ${s._count.responses} respostas` : ''}
+                  {s._count?.responses != null ? ` \u00B7 ${s._count.responses} respostas` : ''}
                 </span>
               </li>
             ))}
@@ -160,7 +158,7 @@ export default function SurveysPage() {
       )}
 
       {!active && list.length === 0 && (
-        <p className="text-muted-foreground">Nenhuma pesquisa ativa ou histórica.</p>
+        <p className="text-muted-foreground">Nenhuma pesquisa ativa ou historica.</p>
       )}
     </div>
   );

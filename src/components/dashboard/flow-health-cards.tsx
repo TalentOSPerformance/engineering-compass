@@ -1,5 +1,3 @@
-'use client';
-
 interface FlowHealth {
   cycleTimeP85: number;
   prPickupTimeAvg: number;

@@ -1,5 +1,3 @@
-'use client';
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from './api';
 import type { AuthUser } from '@/types/shared-types';

@@ -1,5 +1,3 @@
-'use client';
-
 interface BusFactorResult {
   busFactor: number;
   atRiskComponents: Array<{

@@ -1,5 +1,3 @@
-'use client';
-
 import { Rocket, Clock, ShieldCheck, Wrench } from 'lucide-react';
 
 interface MetricValue {

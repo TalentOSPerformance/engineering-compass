@@ -1,7 +1,5 @@
-'use client';
-
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth-context';
 import { FilterProvider } from '../components/filters/filter-context';
 import { GlobalFilters } from '../components/filters/global-filters';
@@ -88,7 +86,7 @@ const NAV_SECTIONS: NavSection[] = [
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const { effectiveOrganizationId: orgId } = useAuth();
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   const showFilters = METRIC_PAGES.some(
@@ -194,8 +192,8 @@ function SidebarNavItem({
       : pathname === item.href || pathname.startsWith(item.href + '/');
 
   return (
-    <a
-      href={item.href}
+    <Link
+      to={item.href}
       title={collapsed ? item.label : undefined}
       className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
         isActive
@@ -207,7 +205,7 @@ function SidebarNavItem({
         {getIcon(item.icon)}
       </span>
       {!collapsed && <span className="truncate">{item.label}</span>}
-    </a>
+    </Link>
   );
 }
 

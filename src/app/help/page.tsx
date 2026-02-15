@@ -1,14 +1,12 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { SERVICES_HELP } from '@/components/help/faq-data';
 import { FaqSection } from '@/components/help/faq-section';
 
 export default function HelpPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const openWizardForIntegration = (serviceId: string) => {
-    router.push(`/integrations?open=${serviceId}&wizard=1`);
+    navigate(`/integrations?open=${serviceId}&wizard=1`);
   };
 
   return (

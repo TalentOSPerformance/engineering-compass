@@ -1,5 +1,3 @@
-'use client';
-
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 export interface MetricCardProps {

@@ -1,7 +1,5 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
 import { useFilters } from '@/components/filters/filter-context';
 import api from '@/lib/api';

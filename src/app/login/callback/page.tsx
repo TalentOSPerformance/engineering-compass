@@ -1,13 +1,11 @@
-'use client';
-
 import { Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 function LoginCallbackPageContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -31,8 +29,8 @@ function LoginCallbackPageContent() {
       }
     }
 
-    router.replace('/');
-  }, [router, searchParams]);
+    navigate('/', { replace: true });
+  }, [navigate, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">

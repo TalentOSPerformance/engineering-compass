@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState, useMemo } from 'react';
 import { subDays, format } from 'date-fns';
 import { useAuth } from '@/lib/auth-context';

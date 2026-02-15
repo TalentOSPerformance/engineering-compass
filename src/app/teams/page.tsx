@@ -1,7 +1,5 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
 import api from '@/lib/api';
 
@@ -48,7 +46,7 @@ export default function TeamsListPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Times</h1>
         <Link
-          href="/settings?tab=teams"
+          to="/settings?tab=teams"
           className="rounded-lg bg-surface-hover px-4 py-2 text-sm font-medium text-foreground-secondary hover:bg-surface-active transition-colors"
         >
           Criar time / Gerenciar
@@ -66,7 +64,7 @@ export default function TeamsListPage() {
       ) : teams.length === 0 ? (
         <div className="rounded-xl border border-border-default bg-surface p-8 text-center text-muted-foreground">
           Nenhum time. Crie um em{' '}
-          <Link href="/settings?tab=teams" className="text-blue-500 hover:underline">
+          <Link to="/settings?tab=teams" className="text-blue-500 hover:underline">
             Settings → Teams
           </Link>
           .
@@ -97,13 +95,13 @@ export default function TeamsListPage() {
                   </td>
                   <td className="px-5 py-3 text-right">
                     <Link
-                      href={`/teams/${team.id}`}
+                      to={`/teams/${team.id}`}
                       className="rounded-lg bg-surface-hover px-3 py-1 text-xs text-foreground-secondary hover:bg-surface-active transition-colors mr-2"
                     >
                       Ver detalhes
                     </Link>
                     <Link
-                      href="/settings?tab=teams"
+                      to="/settings?tab=teams"
                       className="rounded-lg bg-surface-hover px-3 py-1 text-xs text-foreground-secondary hover:bg-surface-active transition-colors"
                     >
                       Gerenciar
