@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useRef, useEffect } from 'react';
 import { useFilters, PERIOD_PRESETS } from './filter-context';
 

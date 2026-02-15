@@ -1,15 +1,13 @@
-'use client';
-
 import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../lib/auth-context';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 function LoginPageContent() {
   const { login } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,7 +25,7 @@ function LoginPageContent() {
 
     try {
       await login(username, password);
-      router.push('/');
+      navigate('/');
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');
     } finally {

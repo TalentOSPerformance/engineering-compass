@@ -1,5 +1,3 @@
-'use client';
-
 interface Skill {
   name: string;
   category: string;

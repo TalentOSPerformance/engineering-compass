@@ -1,5 +1,3 @@
-'use client';
-
 interface TrendData {
   period: string;
   value: number;

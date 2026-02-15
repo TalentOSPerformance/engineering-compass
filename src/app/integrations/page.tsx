@@ -1,8 +1,5 @@
-'use client';
-
-import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
 import api from '../../lib/api';
 import { getServiceHelp } from '@/components/help/faq-data';
@@ -150,7 +147,7 @@ function IntegrationsPageContent() {
   const [error, setError] = useState('');
 
   const { user, effectiveOrganizationId: orgId } = useAuth();
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const [wizardServiceId, setWizardServiceId] = useState<ServiceId | null>(null);
 
@@ -458,7 +455,7 @@ function IntegrationsPageContent() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-bold text-foreground">Integrações</h1>
         <Link
-          href="/help"
+          to="/help"
           className="text-sm text-muted-foreground hover:text-foreground-secondary underline"
         >
           FAQ e guias de configuração
@@ -1098,9 +1095,5 @@ function IntegrationsPageContent() {
 }
 
 export default function IntegrationsPage() {
-  return (
-    <Suspense fallback={<div className="space-y-6"><h1 className="text-2xl font-bold text-foreground">Integrações</h1><p className="text-muted">Carregando...</p></div>}>
-      <IntegrationsPageContent />
-    </Suspense>
-  );
+  return <IntegrationsPageContent />;
 }

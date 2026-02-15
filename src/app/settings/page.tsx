@@ -1,7 +1,5 @@
-'use client';
-
-import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
 import api from '@/lib/api';
 
@@ -52,7 +50,7 @@ type PersonOption = { id: string; displayName: string; primaryEmail: string };
 
 function SettingsPageContent() {
   const { effectiveOrganizationId: orgId, user } = useAuth();
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
   const [tab, setTab] = useState<Tab>('general');
   useEffect(() => {
@@ -675,9 +673,5 @@ function SettingsPageContent() {
 }
 
 export default function SettingsPage() {
-  return (
-    <Suspense fallback={<div className="p-6"><p className="text-muted">Carregando...</p></div>}>
-      <SettingsPageContent />
-    </Suspense>
-  );
+  return <SettingsPageContent />;
 }

@@ -1,5 +1,3 @@
-'use client';
-
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
 export interface PeriodPreset {
@@ -81,7 +79,7 @@ export function FilterProvider({
       return;
     }
     setTeamsLoading(true);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api/v1';
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;

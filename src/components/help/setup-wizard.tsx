@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import type { ServiceHelp } from './faq-data';
 

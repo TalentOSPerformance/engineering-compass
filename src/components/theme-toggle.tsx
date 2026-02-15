@@ -1,5 +1,3 @@
-'use client';
-
 import { useTheme } from '../lib/theme-context';
 
 export function ThemeToggle() {

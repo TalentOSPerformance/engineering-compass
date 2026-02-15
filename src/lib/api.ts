@@ -6,7 +6,7 @@
  * - If refresh fails, redirects to /login.
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api/v1';
 
 let isRefreshing = false;
 let refreshSubscribers: Array<() => void> = [];

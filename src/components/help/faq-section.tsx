@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import type { ServiceHelp, FaqItem } from './faq-data';
 import { SetupWizard } from './setup-wizard';
