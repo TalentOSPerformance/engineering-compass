@@ -2,6 +2,19 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import api from './api';
 import type { AuthUser } from '@/types/shared-types';
 
+const MOCK_ENABLED =
+  (import.meta as any).env?.VITE_MOCK === 'true' ||
+  (import.meta as any).env?.VITE_MOCK === true ||
+  !(import.meta as any).env?.VITE_API_URL;
+
+const MOCK_USER: AuthUser = {
+  id: 'user-mock-001',
+  username: 'admin',
+  role: 'admin',
+  organizationId: 'mock-org-001',
+  personId: 'person-1',
+};
+
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
@@ -15,9 +28,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [defaultOrgId, setDefaultOrgId] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(MOCK_ENABLED ? MOCK_USER : null);
+  const [loading, setLoading] = useState(!MOCK_ENABLED);
+  const [defaultOrgId, setDefaultOrgId] = useState<string | null>(MOCK_ENABLED ? 'mock-org-001' : null);
   /** Only true after mount; keeps server and first client render identical (no localStorage/org resolution) */
   const [mounted, setMounted] = useState(false);
 
@@ -26,6 +39,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refreshUser = useCallback(async () => {
+    if (MOCK_ENABLED) {
+      setUser(MOCK_USER);
+      return;
+    }
     try {
       const data = await api.get('/auth/me');
       if (data) {
@@ -47,6 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (MOCK_ENABLED) {
+      setLoading(false);
+      return;
+    }
     const token = localStorage.getItem('token');
     if (token) {
       refreshUser().finally(() => setLoading(false));
@@ -57,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // When not logged in, resolve default organization so dashboard/integrations etc. work
   useEffect(() => {
+    if (MOCK_ENABLED) return;
     if (user?.organizationId) return;
     const stored = typeof window !== 'undefined' ? localStorage.getItem('organizationId') : null;
     if (stored) {
@@ -74,13 +96,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .catch(() => {});
   }, [user?.organizationId]);
 
-  const effectiveOrganizationId = mounted
-    ? (user?.organizationId ??
-       (typeof window !== 'undefined' ? localStorage.getItem('organizationId') : null) ??
-       defaultOrgId)
-    : null;
+  const effectiveOrganizationId = MOCK_ENABLED
+    ? 'mock-org-001'
+    : mounted
+      ? (user?.organizationId ??
+         (typeof window !== 'undefined' ? localStorage.getItem('organizationId') : null) ??
+         defaultOrgId)
+      : null;
 
   const login = async (username: string, password: string) => {
+    if (MOCK_ENABLED) {
+      setUser(MOCK_USER);
+      return;
+    }
     const data = await api.post('/auth/login', { username, password });
     if (data.token) {
       localStorage.setItem('token', data.token);
@@ -97,6 +125,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    if (MOCK_ENABLED) {
+      setUser(null);
+      return;
+    }
     try {
       await api.post('/auth/logout', {
         refreshToken: localStorage.getItem('refreshToken'),

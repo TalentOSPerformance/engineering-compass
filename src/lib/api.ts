@@ -1,10 +1,18 @@
 /**
  * API client for TalentOS frontend.
  *
- * - Sends credentials (cookies) automatically.
+ * - When VITE_MOCK=true, returns mock data without hitting any server.
+ * - Otherwise sends credentials (cookies) automatically.
  * - On 401, attempts refresh (queues concurrent requests).
  * - If refresh fails, redirects to /login.
  */
+
+import { matchMockRoute } from './mock-data';
+
+const MOCK_ENABLED =
+  (import.meta as any).env?.VITE_MOCK === 'true' ||
+  (import.meta as any).env?.VITE_MOCK === true ||
+  !(import.meta as any).env?.VITE_API_URL; // Auto-enable mock when no API URL is configured
 
 const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api/v1';
 
@@ -61,6 +69,27 @@ export async function apiFetch<T = any>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
+  // ─── Mock mode ─────────────────────────────────────────────
+  if (MOCK_ENABLED) {
+    // Simulate network delay for realism
+    await new Promise((r) => setTimeout(r, Math.random() * 200 + 50));
+
+    // Extract body for POST/PUT/PATCH
+    let body: any;
+    if (options.body && typeof options.body === 'string') {
+      try { body = JSON.parse(options.body); } catch { /* ignore */ }
+    }
+
+    const result = matchMockRoute(path, body);
+    if (result !== undefined) {
+      return result as T;
+    }
+    // If no mock route matched, return empty object/array as fallback
+    console.warn(`[Mock] No handler for: ${path}`);
+    return {} as T;
+  }
+
+  // ─── Real API mode ─────────────────────────────────────────
   const url = `${API_URL}${path}`;
 
   const headers: Record<string, string> = {
@@ -119,7 +148,7 @@ export async function apiFetch<T = any>(
   return res.json();
 }
 
-// ─── Convenience methods ─────────────────────────────────────────
+// ─── Convenience methods ─────────────────────────────────────
 
 export const api = {
   get: <T = any>(path: string) => apiFetch<T>(path),
