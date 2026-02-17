@@ -181,13 +181,36 @@ route(/\/metrics\/[^/]+\/dora\b/, () => ({
   trends: { deploymentFrequency: 12, leadTimeForChanges: -8, changeFailureRate: -15, timeToRestore: -20 },
 }));
 
-// ─── Review Distribution ──────────────────────────────────────
+// ─── Review Health Dashboard ──────────────────────────────────
 
 route(/\/metrics\/[^/]+\/flow\/review-distribution/, () => ({
   silent: 8,
   oneReviewer: 52,
   twoPlus: 82,
   total: 142,
+}));
+
+route(/\/metrics\/[^/]+\/flow\/review-health/, () => ({
+  coverageTrend: Array.from({ length: 12 }, (_, i) => {
+    const total = Math.floor(Math.random() * 15) + 25;
+    const silent = Math.max(0, Math.floor((12 - i) * 0.8 + Math.random() * 3));
+    const twoPlus = Math.floor((i + 2) * 2.5 + Math.random() * 4);
+    const oneReviewer = total - silent - twoPlus;
+    return { week: `W${i + 1}`, silent, oneReviewer: Math.max(0, oneReviewer), twoPlus };
+  }),
+  turnaroundScatter: Array.from({ length: 50 }, (_, i) => {
+    const linesChanged = Math.floor(Math.random() * 900) + 10;
+    // Simulate: larger PRs take longer to get first review
+    const baseHours = linesChanged > 200 ? randomBetween(8, 72) : randomBetween(1, 24);
+    const jitter = randomBetween(-2, 6);
+    return {
+      id: `review-scatter-${i}`,
+      title: `PR #${300 + i}`,
+      linesChanged,
+      firstReviewHours: Math.max(0.5, baseHours + jitter),
+      sizeCategory: linesChanged < 10 ? 'XS' : linesChanged < 100 ? 'S' : linesChanged < 500 ? 'M' : linesChanged < 1000 ? 'L' : 'XL',
+    };
+  }),
 }));
 
 // ─── Quality ──────────────────────────────────────────────────

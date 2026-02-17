@@ -3,8 +3,11 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  ScatterChart,
+  Scatter,
   XAxis,
   YAxis,
+  ZAxis,
   Tooltip,
   CartesianGrid,
 } from 'recharts';
@@ -94,6 +97,11 @@ interface ReviewDistribution {
   oneReviewer: number;
   twoPlus: number;
   total: number;
+}
+
+interface ReviewHealthData {
+  coverageTrend: Array<{ week: string; silent: number; oneReviewer: number; twoPlus: number }>;
+  turnaroundScatter: Array<{ id: string; title: string; linesChanged: number; firstReviewHours: number; sizeCategory: string }>;
 }
 
 interface QualityTimelineDay {
@@ -352,6 +360,7 @@ export default function DeliveryPage() {
   const [doraData, setDoraData] = useState<DORAData | null>(null);
   const [flowData, setFlowData] = useState<DashboardData['flow'] | null>(null);
   const [reviewDist, setReviewDist] = useState<ReviewDistribution | null>(null);
+  const [reviewHealth, setReviewHealth] = useState<ReviewHealthData | null>(null);
   const [qualityData, setQualityData] = useState<QualityData | null>(null);
   const [throughputData, setThroughputData] = useState<ThroughputData | null>(null);
   const [doraPlusData, setDoraPlusData] = useState<DoraPlusData | null>(null);
@@ -377,19 +386,21 @@ export default function DeliveryPage() {
       api.get<DORAData>(`/metrics/${orgId}/dora?${params}`),
       api.get<DashboardData>(`/metrics/${orgId}/dashboard?${params}`).catch(() => null),
       api.get<ReviewDistribution>(`/metrics/${orgId}/flow/review-distribution?days=${days}`).catch(() => null),
+      api.get<ReviewHealthData>(`/metrics/${orgId}/flow/review-health?${params}`).catch(() => null),
       api.get<QualityData>(`/metrics/${orgId}/quality?${params}`).catch(() => null),
       api.get<ThroughputData>(`/metrics/${orgId}/throughput?${params}`).catch(() => null),
       api.get<DoraPlusData>(`/metrics/${orgId}/dora-plus?${params}`).catch(() => null),
       api.get<BugsData>(`/metrics/${orgId}/bugs?${params}`).catch(() => null),
       api.get<ProcessLimitsData>(`/metrics/${orgId}/process-limits?${params}&metric=cycle_time`).catch(() => null),
     ])
-      .then(([bd, sc, pr, dora, dash, revDist, quality, throughput, doraPlus, bugs, pl]) => {
+      .then(([bd, sc, pr, dora, dash, revDist, revHealth, quality, throughput, doraPlus, bugs, pl]) => {
         setBreakdown(bd);
         setScatter(sc);
         setPrs(pr);
         setDoraData(dora);
         if (dash) setFlowData((dash as any).flow ?? null);
         if (revDist) setReviewDist(revDist as any);
+        if (revHealth) setReviewHealth(revHealth as any);
         if (quality) setQualityData(quality);
         if (throughput) setThroughputData(throughput);
         if (doraPlus) setDoraPlusData(doraPlus);
@@ -482,23 +493,125 @@ export default function DeliveryPage() {
         </section>
       )}
 
-      {/* ─── Review Distribution ───────────────────────────────── */}
-      {reviewDist && reviewDist.total > 0 && (
+      {/* ─── Review Health Dashboard ─────────────────────────── */}
+      {(reviewHealth || (reviewDist && reviewDist.total > 0)) && (
         <section>
-          <BarChartCard
-            title="Review Distribution"
-            description="Quantidade de PRs mergeados no período por número de revisores (0, 1 ou 2+)."
-            tooltip="Mostra quantos PRs foram mergeados sem review (vermelho), com 1 revisor (laranja) ou com 2+ revisores (verde). Ajuda a ver se o time está praticando code review: muitos PRs em vermelho indicam merges sem aprovação de outro dev, o que pode aumentar risco de bugs."
-            data={[
-              { name: 'Silent (0 reviews)', value: reviewDist.silent },
-              { name: '1 Reviewer', value: reviewDist.oneReviewer },
-              { name: '2+ Reviewers', value: reviewDist.twoPlus },
-            ]}
-            dataKey="value"
-            nameKey="name"
-            colors={['#ef4444', '#f59e0b', '#10b981']}
-            height={180}
-          />
+          <h2 className="mb-1 text-base font-semibold text-foreground-secondary">Review Health</h2>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Tendência de cobertura de review e tempo de resposta por tamanho de PR.
+          </p>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* ── Stacked Area: Review Coverage Trend ── */}
+            {reviewHealth?.coverageTrend && (
+              <div className="rounded-xl border border-border-default bg-surface p-5">
+                <div className="mb-1 flex items-start gap-2">
+                  <div>
+                    <p className="text-sm font-medium text-foreground-secondary">Cobertura de Review por Semana</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      Evolução da proporção de PRs por quantidade de revisores — a &quot;mancha&quot; vermelha diminuindo indica melhoria.
+                    </p>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={240}>
+                  <AreaChart data={reviewHealth.coverageTrend} margin={{ top: 8, right: 8, bottom: 0, left: -10 }}>
+                    <defs>
+                      <linearGradient id="grad-silent" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--destructive))" stopOpacity={0.6} />
+                        <stop offset="100%" stopColor="hsl(var(--destructive))" stopOpacity={0.1} />
+                      </linearGradient>
+                      <linearGradient id="grad-one" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(45 93% 47%)" stopOpacity={0.6} />
+                        <stop offset="100%" stopColor="hsl(45 93% 47%)" stopOpacity={0.1} />
+                      </linearGradient>
+                      <linearGradient id="grad-twoplus" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(160 84% 39%)" stopOpacity={0.6} />
+                        <stop offset="100%" stopColor="hsl(160 84% 39%)" stopOpacity={0.1} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-default, #e5e7eb)" />
+                    <XAxis dataKey="week" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      content={({ active, payload, label }) =>
+                        active && payload?.length ? (
+                          <div className="rounded-lg border border-border-default bg-surface px-3 py-2 shadow-lg text-xs">
+                            <p className="font-semibold text-foreground mb-1">{label}</p>
+                            {payload.map((entry: any, i: number) => (
+                              <p key={i} className="text-foreground-secondary">
+                                <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: entry.color }} />
+                                {entry.name}: {entry.value} PRs
+                              </p>
+                            ))}
+                          </div>
+                        ) : null
+                      }
+                    />
+                    <Area type="monotone" dataKey="twoPlus" name="2+ Reviewers" stackId="1" stroke="hsl(160 84% 39%)" fill="url(#grad-twoplus)" />
+                    <Area type="monotone" dataKey="oneReviewer" name="1 Reviewer" stackId="1" stroke="hsl(45 93% 47%)" fill="url(#grad-one)" />
+                    <Area type="monotone" dataKey="silent" name="Sem Review" stackId="1" stroke="hsl(var(--destructive))" fill="url(#grad-silent)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+                <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(160, 84%, 39%)' }} />2+ Reviewers</span>
+                  <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(45, 93%, 47%)' }} />1 Reviewer</span>
+                  <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(0, 84%, 60%)' }} />Sem Review</span>
+                </div>
+              </div>
+            )}
+
+            {/* ── Scatter: Review Turnaround vs Lines Changed ── */}
+            {reviewHealth?.turnaroundScatter && (
+              <div className="rounded-xl border border-border-default bg-surface p-5">
+                <div className="mb-1">
+                  <p className="text-sm font-medium text-foreground-secondary">Tempo p/ 1º Review vs Tamanho do PR</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Identifique o &quot;ponto de ruptura&quot;: PRs maiores ficam parados mais tempo aguardando review.
+                  </p>
+                </div>
+                <ResponsiveContainer width="100%" height={240}>
+                  <ScatterChart margin={{ top: 8, right: 8, bottom: 4, left: -10 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-default, #e5e7eb)" />
+                    <XAxis
+                      dataKey="linesChanged"
+                      type="number"
+                      name="Linhas alteradas"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      label={{ value: 'Linhas alteradas', position: 'insideBottom', offset: -2, fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                    />
+                    <YAxis
+                      dataKey="firstReviewHours"
+                      type="number"
+                      name="Horas p/ 1º review"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      label={{ value: 'Horas', angle: -90, position: 'insideLeft', offset: 15, fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                    />
+                    <ZAxis range={[30, 30]} />
+                    <Tooltip
+                      content={({ active, payload }) =>
+                        active && payload?.length ? (
+                          <div className="rounded-lg border border-border-default bg-surface px-3 py-2 shadow-lg text-xs">
+                            <p className="font-semibold text-foreground mb-1">{(payload[0]?.payload as any)?.title}</p>
+                            <p className="text-foreground-secondary">{Math.round((payload[0]?.payload as any)?.linesChanged)} linhas</p>
+                            <p className="text-foreground-secondary">{((payload[0]?.payload as any)?.firstReviewHours).toFixed(1)}h p/ 1º review</p>
+                            <p className="text-foreground-secondary">Tamanho: {(payload[0]?.payload as any)?.sizeCategory}</p>
+                          </div>
+                        ) : null
+                      }
+                      cursor={{ strokeDasharray: '3 3' }}
+                    />
+                    <Scatter data={reviewHealth.turnaroundScatter} fill="hsl(var(--primary))" fillOpacity={0.65} />
+                  </ScatterChart>
+                </ResponsiveContainer>
+                <p className="mt-2 text-xs text-muted-foreground italic">
+                  💡 Dica: se acima de ~200 linhas o tempo dispara, é hora de quebrar PRs menores.
+                </p>
+              </div>
+            )}
+          </div>
         </section>
       )}
 
