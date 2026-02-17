@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import api from '@/lib/api';
 
 export interface PeriodPreset {
   label: string;
@@ -79,16 +80,11 @@ export function FilterProvider({
       return;
     }
     setTeamsLoading(true);
-    const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api/v1';
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-
-    fetch(`${API_URL}/organizations/${orgId}/teams`, { headers, credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : []))
+    api
+      .get<any[]>(`/organizations/${orgId}/teams`)
       .then((data: any[]) => {
         setTeams(
-          data.map((t) => ({
+          (Array.isArray(data) ? data : []).map((t) => ({
             id: t.id,
             name: t.name,
             parentTeamId: t.parentTeamId || null,
