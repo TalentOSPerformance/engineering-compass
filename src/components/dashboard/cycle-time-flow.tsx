@@ -9,13 +9,9 @@ export interface CycleStage {
 }
 
 export interface CycleTimeFlowProps {
-  /** Total P85 cycle time in hours */
   totalHours: number;
-  /** Individual stage breakdown — pass null/undefined if no breakdown data */
   stages: CycleStage[] | null;
-  /** Trend percentage vs previous period (positive = improvement) */
   trendPct?: number;
-  /** Optional className for the outer container */
   className?: string;
 }
 
@@ -43,7 +39,6 @@ function formatHoursShort(hours: number): string {
 }
 
 function classifyStageLevel(label: string, hours: number): 'elite' | 'high' | 'medium' | 'low' {
-  // Thresholds vary by stage type
   if (label === 'Coding') {
     if (hours <= 4) return 'elite';
     if (hours <= 12) return 'high';
@@ -62,7 +57,6 @@ function classifyStageLevel(label: string, hours: number): 'elite' | 'high' | 'm
     if (hours <= 16) return 'medium';
     return 'low';
   }
-  // Deploy
   if (hours <= 0.5) return 'elite';
   if (hours <= 2) return 'high';
   if (hours <= 6) return 'medium';
@@ -78,20 +72,23 @@ export function CycleTimeFlow({ totalHours, stages, trendPct, className }: Cycle
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.05 }}
+      transition={{ duration: 0.35, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        'rounded-xl border border-border-default bg-surface p-5',
+        'relative rounded-md border border-border-default bg-surface p-5 card-hover overflow-hidden',
         className,
       )}
     >
+      {/* Left accent */}
+      <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-accent opacity-50" />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground">Cycle Time</h3>
         {trendPct != null && trendPct !== 0 && (
           <div
-            className="flex items-center gap-1.5 text-xs"
+            className="flex items-center gap-1.5 text-xs font-mono"
             style={{ color: trendPct > 0 ? levelBarStyle.elite : levelBarStyle.low }}
           >
             {trendPct > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
@@ -123,19 +120,17 @@ export function CycleTimeFlow({ totalHours, stages, trendPct, className }: Cycle
                   style={{ width: `${widthPct}%`, minWidth: 0 }}
                 >
                   <div className="flex-1 min-w-0">
-                    {/* Bar */}
                     <motion.div
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.5, delay: 0.2 + i * 0.1, ease: 'easeOut' }}
                       className={cn(
-                        'h-3 origin-left relative',
-                        i === 0 && 'rounded-l-full',
-                        i === stages!.length - 1 && 'rounded-r-full',
+                        'h-2.5 origin-left relative',
+                        i === 0 && 'rounded-l-sm',
+                        i === stages!.length - 1 && 'rounded-r-sm',
                       )}
                       style={{ backgroundColor: levelBarStyle[stage.level], opacity: 0.85 }}
                     />
-                    {/* Label */}
                     <div className="mt-2 px-0.5">
                       <p
                         className="text-sm font-semibold font-mono"
@@ -157,10 +152,9 @@ export function CycleTimeFlow({ totalHours, stages, trendPct, className }: Cycle
             })}
           </div>
 
-          {/* Bottleneck hint */}
           {bottleneck && (
             <div
-              className="mt-4 flex items-center gap-2 px-3 py-2 rounded-md"
+              className="mt-4 flex items-center gap-2 px-3 py-2 rounded-sm"
               style={{
                 backgroundColor: 'rgb(var(--perf-medium) / 0.08)',
                 borderWidth: 1,
@@ -184,7 +178,6 @@ export function CycleTimeFlow({ totalHours, stages, trendPct, className }: Cycle
   );
 }
 
-/** Helper to build CycleStage[] from breakdown API data */
 export function buildStagesFromBreakdown(breakdown: {
   codingTimeP75: number;
   pickupTimeP75: number;
@@ -192,25 +185,9 @@ export function buildStagesFromBreakdown(breakdown: {
   deployTimeP75: number;
 }): CycleStage[] {
   return [
-    {
-      label: 'Coding',
-      hours: breakdown.codingTimeP75,
-      level: classifyStageLevel('Coding', breakdown.codingTimeP75),
-    },
-    {
-      label: 'Pickup',
-      hours: breakdown.pickupTimeP75,
-      level: classifyStageLevel('Pickup', breakdown.pickupTimeP75),
-    },
-    {
-      label: 'Review',
-      hours: breakdown.reviewTimeP75,
-      level: classifyStageLevel('Review', breakdown.reviewTimeP75),
-    },
-    {
-      label: 'Deploy',
-      hours: breakdown.deployTimeP75,
-      level: classifyStageLevel('Deploy', breakdown.deployTimeP75),
-    },
+    { label: 'Coding', hours: breakdown.codingTimeP75, level: classifyStageLevel('Coding', breakdown.codingTimeP75) },
+    { label: 'Pickup', hours: breakdown.pickupTimeP75, level: classifyStageLevel('Pickup', breakdown.pickupTimeP75) },
+    { label: 'Review', hours: breakdown.reviewTimeP75, level: classifyStageLevel('Review', breakdown.reviewTimeP75) },
+    { label: 'Deploy', hours: breakdown.deployTimeP75, level: classifyStageLevel('Deploy', breakdown.deployTimeP75) },
   ];
 }

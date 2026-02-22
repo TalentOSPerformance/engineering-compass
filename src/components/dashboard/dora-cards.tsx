@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { Rocket, Clock, ShieldCheck, Wrench } from 'lucide-react';
 
 interface MetricValue {
@@ -28,6 +29,13 @@ const LEVEL_DOT = {
   low: 'bg-red-400',
 };
 
+const LEVEL_ACCENT = {
+  elite: 'rgb(var(--perf-elite))',
+  high: 'rgb(var(--perf-high))',
+  medium: 'rgb(var(--perf-medium))',
+  low: 'rgb(var(--perf-low))',
+};
+
 function formatValue(metric: MetricValue): { main: string; unit: string } {
   switch (metric.unit) {
     case 'deploys_per_day':
@@ -55,44 +63,38 @@ function TrendBadge({ pct }: { pct: number }) {
 
 export function DORACards({ metrics }: { metrics: DORAMetrics }) {
   const cards = [
-    {
-      label: 'Deployment Frequency',
-      metric: metrics.deploymentFrequency,
-      icon: Rocket,
-    },
-    {
-      label: 'Lead Time for Changes',
-      metric: metrics.leadTimeForChanges,
-      icon: Clock,
-    },
-    {
-      label: 'Change Failure Rate',
-      metric: metrics.changeFailureRate,
-      icon: ShieldCheck,
-    },
-    {
-      label: 'Time to Restore',
-      metric: metrics.timeToRestore,
-      icon: Wrench,
-    },
+    { label: 'Deployment Frequency', metric: metrics.deploymentFrequency, icon: Rocket },
+    { label: 'Lead Time for Changes', metric: metrics.leadTimeForChanges, icon: Clock },
+    { label: 'Change Failure Rate', metric: metrics.changeFailureRate, icon: ShieldCheck },
+    { label: 'Time to Restore', metric: metrics.timeToRestore, icon: Wrench },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map((card) => {
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {cards.map((card, i) => {
         const formatted = formatValue(card.metric);
         const Icon = card.icon;
         return (
-          <div
+          <motion.div
             key={card.label}
-            className="rounded-xl border border-border-default bg-surface p-5 transition-colors hover:border-border-default"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            className="group relative rounded-md border border-border-default bg-surface p-5 card-hover card-accent overflow-hidden"
+            style={{ '--accent-color': LEVEL_ACCENT[card.metric.level] } as React.CSSProperties}
           >
+            {/* Colored left accent */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity duration-200 group-hover:opacity-100"
+              style={{ backgroundColor: LEVEL_ACCENT[card.metric.level], opacity: 0.6 }}
+            />
+
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground opacity-60">
+              <span className="text-muted-foreground opacity-50 group-hover:opacity-80 transition-opacity">
                 <Icon size={18} />
               </span>
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${LEVEL_COLORS[card.metric.level]}`}
+                className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-medium capitalize ${LEVEL_COLORS[card.metric.level]}`}
               >
                 <span className={`h-1.5 w-1.5 rounded-full ${LEVEL_DOT[card.metric.level]}`} />
                 {card.metric.level}
@@ -101,7 +103,7 @@ export function DORACards({ metrics }: { metrics: DORAMetrics }) {
             <div className="mt-4">
               <p className="text-sm text-muted-foreground">{card.label}</p>
               <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight text-foreground">
+                <span className="text-3xl font-bold tracking-tight text-foreground font-mono">
                   {formatted.main}
                 </span>
                 <span className="text-sm text-muted-foreground">{formatted.unit}</span>
@@ -110,7 +112,7 @@ export function DORACards({ metrics }: { metrics: DORAMetrics }) {
                 <TrendBadge pct={card.metric.trendPct} />
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

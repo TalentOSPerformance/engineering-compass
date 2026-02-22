@@ -130,14 +130,14 @@ export default function HomePage() {
           <p className="text-xs text-muted-foreground mt-0.5">Visao executiva das metricas de engenharia</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-3">
-          <div className="lg:col-span-3 rounded-xl border border-border-default bg-surface p-5 animate-pulse h-[220px]">
+          <div className="lg:col-span-3 rounded-md border border-border-default bg-surface p-5 animate-pulse h-[220px]">
             <div className="h-4 w-24 rounded bg-surface-hover mb-4" />
             <div className="h-10 w-32 rounded bg-surface-hover mb-4" />
             <div className="h-3 w-full rounded bg-surface-hover" />
           </div>
           <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-xl border border-border-default bg-surface p-4 animate-pulse h-[100px]">
+              <div key={i} className="rounded-md border border-border-default bg-surface p-4 animate-pulse h-[100px]">
                 <div className="h-3 w-16 rounded bg-surface-hover mb-3" />
                 <div className="h-6 w-12 rounded bg-surface-hover" />
               </div>
@@ -304,7 +304,7 @@ export default function HomePage() {
       {/* ─── Teams Overview ────────────────────────────────────── */}
       <section>
         <h2 className="text-sm font-semibold text-foreground mb-3">Times</h2>
-        <div className="overflow-hidden rounded-xl border border-border-default bg-surface">
+        <div className="overflow-hidden rounded-md border border-border-default bg-surface">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border-default text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">

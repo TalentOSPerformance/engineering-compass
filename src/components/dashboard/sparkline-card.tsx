@@ -10,18 +10,16 @@ interface SparklineCardProps {
   title: string;
   value: string;
   unit: string;
-  /** Optional sparkline data — if empty/null, no chart is shown */
   data?: { v: number }[];
   color?: string;
   delay?: number;
-  /** Optional secondary text below the unit */
   secondary?: string;
 }
 
 function MiniTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded border border-border-default bg-surface px-2 py-1 text-[10px] font-mono text-foreground shadow-sm">
+    <div className="rounded-sm border border-border-default bg-surface px-2 py-1 text-[10px] font-mono text-foreground shadow-sm">
       {payload[0].value}
     </div>
   );
@@ -33,11 +31,17 @@ export function SparklineCard({ title, value, unit, data, color = 'rgb(var(--per
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: delay * 0.06 }}
-      className="rounded-xl border border-border-default bg-surface p-4 flex flex-col justify-between"
+      transition={{ duration: 0.3, delay: delay * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative rounded-md border border-border-default bg-surface p-4 flex flex-col justify-between card-hover overflow-hidden"
     >
+      {/* Left accent */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-[3px] opacity-40 group-hover:opacity-80 transition-opacity"
+        style={{ backgroundColor: color }}
+      />
+
       <span className="text-xs font-medium text-muted-foreground">{title}</span>
       <div className="flex items-baseline gap-1.5 mt-1">
         <span className="text-xl font-semibold font-mono tracking-tight text-foreground">{value}</span>
