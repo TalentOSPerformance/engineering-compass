@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 interface FlowHealth {
   cycleTimeP85: number;
   prPickupTimeAvg: number;
@@ -21,9 +23,9 @@ function classifyFlow(metric: string, value: number): 'elite' | 'high' | 'low' {
 }
 
 const STATUS_STYLES = {
-  elite: { bar: 'bg-emerald-500', text: 'text-emerald-400', label: 'Healthy' },
-  high: { bar: 'bg-amber-500', text: 'text-amber-400', label: 'Attention' },
-  low: { bar: 'bg-red-500', text: 'text-red-400', label: 'Risk' },
+  elite: { bar: 'bg-emerald-500', text: 'text-emerald-400', label: 'Healthy', accent: 'rgb(var(--perf-elite))' },
+  high: { bar: 'bg-amber-500', text: 'text-amber-400', label: 'Attention', accent: 'rgb(var(--perf-medium))' },
+  low: { bar: 'bg-red-500', text: 'text-red-400', label: 'Risk', accent: 'rgb(var(--perf-low))' },
 };
 
 export function FlowHealthCards({ flow }: { flow: FlowHealth }) {
@@ -59,29 +61,40 @@ export function FlowHealthCards({ flow }: { flow: FlowHealth }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {metrics.map((m) => {
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {metrics.map((m, i) => {
         const style = STATUS_STYLES[m.level];
         return (
-          <div
+          <motion.div
             key={m.label}
-            className="rounded-xl border border-border-default bg-surface p-5"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+            className="group relative rounded-md border border-border-default bg-surface p-5 card-hover overflow-hidden"
           >
+            {/* Left accent */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-[3px]"
+              style={{ backgroundColor: style.accent, opacity: 0.5 }}
+            />
+
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-foreground-secondary">{m.label}</p>
               <span className={`text-xs font-medium ${style.text}`}>
                 {style.label}
               </span>
             </div>
-            <p className="mt-3 text-2xl font-bold">{m.value}</p>
+            <p className="mt-3 text-2xl font-bold font-mono">{m.value}</p>
             <p className="mt-1 text-xs text-muted-foreground">{m.description}</p>
-            <div className="mt-3 h-1.5 w-full rounded-full bg-surface-hover">
-              <div
-                className={`h-1.5 rounded-full ${style.bar} transition-all`}
-                style={{ width: `${m.barPct}%` }}
+            <div className="mt-3 h-1 w-full rounded-sm bg-surface-hover overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${m.barPct}%` }}
+                transition={{ duration: 0.6, delay: 0.2 + i * 0.06, ease: 'easeOut' }}
+                className={`h-1 rounded-sm ${style.bar}`}
               />
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>
